@@ -5,10 +5,7 @@ import '@openzeppelin/contracts/math/SafeMath.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
 import '../interfaces/IRewardDistributionRecipient.sol';
-
-interface IDistributor {
-    function distribute() external;
-}
+import '../interfaces/IDistributor.sol';
 
 contract InitialshareDistributor is IDistributor {
     using SafeMath for uint256;

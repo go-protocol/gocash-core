@@ -18,7 +18,7 @@ import './lib/AdminRole.sol';
 import './utils/ContractGuard.sol';
 
 /**
- * @title GoSwap Cash Treasury合约
+ * @title GoCash Cash Treasury合约
  * 实现功能：
  * 1.通过预言机获取GOC价格，根据GOC价格不同，用GOC购买GOB，或赎回GOB获得GOC
  * 2.根据GOC价格不同，增发GOC，并把新增发的GOC分配给fund treasury shareBoardroom
@@ -44,11 +44,11 @@ contract Treasury is ContractGuard, Epoch {
     // ========== CORE 核心
     /// @notice 开发者基金
     address public fund;
-    /// @notice GoSwap Cash地址
+    /// @notice GoCash Cash地址
     address public cash;
-    /// @notice GoSwap Bond地址
+    /// @notice GoCash Bond地址
     address public bond;
-    /// @notice GoSwap Token地址
+    /// @notice GoCash Token地址
     address public share;
     /// @notice share质押董事会合约地址
     address public shareBoardroom;
@@ -100,9 +100,9 @@ contract Treasury is ContractGuard, Epoch {
     /* ========== CONSTRUCTOR ========== */
     /**
      * @dev 构造函数
-     * @param _cash GoSwap Cash地址
-     * @param _bond GoSwap Bond地址
-     * @param _share GoSwap Token地址
+     * @param _cash GoCash Cash地址
+     * @param _bond GoCash Bond地址
+     * @param _share GoCash Token地址
      * @param _oracle Bond预言机地址
      * @param _shareBoardroom share质押董事会合约地址
      * @param _lpBoardroom lp质押董事会合约地址

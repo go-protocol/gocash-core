@@ -4,14 +4,14 @@ pragma solidity ^0.6.0;
 import '@openzeppelin/contracts/token/ERC20/ERC20Burnable.sol';
 import './lib/AdminRole.sol';
 
-contract GoSwapBond is ERC20Burnable, AdminRole {
+contract Bond is ERC20Burnable, AdminRole {
     /**
      * @notice 发行GoSwap Bond代币
      */
-    constructor() public ERC20('GoSwap Bond', 'GOB') {}
+    constructor() public ERC20('GoCash Bond', 'GOB') {}
 
     /**
-     * @notice GoSwap Bond代币的铸造方法
+     * @notice GoCash Bond代币的铸造方法
      * @param recipient_ The address of recipient
      * @param amount_ The amount of basis bonds to mint to
      * @return whether the process has been done
@@ -26,14 +26,14 @@ contract GoSwapBond is ERC20Burnable, AdminRole {
     }
 
     /**
-     * @notice GoSwap Bond代币的销毁方法，Admin有权限销毁
+     * @notice GoCash Bond代币的销毁方法，Admin有权限销毁
      */
     function burn(uint256 amount) public override onlyAdmin {
         super.burn(amount);
     }
 
     /**
-     * @notice GoSwap Bond代币的销毁方法，Admin有权限销毁，配合approve使用
+     * @notice GoCash Bond代币的销毁方法，Admin有权限销毁，配合approve使用
      */
     function burnFrom(address account, uint256 amount) public override onlyAdmin {
         super.burnFrom(account, amount);

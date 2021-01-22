@@ -72,7 +72,7 @@ contract GoSwapOracle is Epoch {
     /* ========== MUTABLE FUNCTIONS ========== */
 
     /**
-     * @dev Updates 1-day EMA price from GoSwap.
+     * @dev Updates 1-day EMA price from GoCash.
      * @dev 更新价格
      */
     function update() external checkEpoch {

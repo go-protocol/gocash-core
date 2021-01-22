@@ -14,7 +14,7 @@ import './utils/ContractGuard.sol';
 contract shareWrapper {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
-    /// @notice GoSwap Token合约地址
+    /// @notice GoCash Token合约地址
     IERC20 public share;
     /// @dev 质押总量
     uint256 private _totalSupply;
@@ -73,7 +73,7 @@ contract shareWrapper {
 }
 
 /**
- * @title GoSwap Cash Boardroom合约
+ * @title GoCash Cash Boardroom合约
  * 实现功能：
  * 1.share抵押到Boardroom，从Boardroom赎回share
  * 2.每次Epoch时，Admin计算cash增发的数量(计算公式在Treasury合约)，
@@ -114,7 +114,7 @@ contract Boardroom is shareWrapper, ContractGuard, AdminRole {
     }
 
     /* ========== STATE VARIABLES ========== */
-    /// @dev GoSwap Cash合约地址
+    /// @dev GoCash Cash合约地址
     IERC20 private cash;
 
     /// @dev 映射：每个地址对应每个董事会席位，即一个地址对应一个董事(结构体)
@@ -126,8 +126,8 @@ contract Boardroom is shareWrapper, ContractGuard, AdminRole {
 
     /**
      * @dev 构造函数
-     * @param _cash GoSwap Cash合约地址
-     * @param _share GoSwap Token合约地址
+     * @param _cash GoCash Cash合约地址
+     * @param _share GoCash Token合约地址
      */
     constructor(IERC20 _cash, IERC20 _share) public {
         cash = _cash;

@@ -11,7 +11,7 @@ import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 contract LPTokenWrapper {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
-    /// @notice GoSwap LP Token合约地址
+    /// @notice GoCash LP Token合约地址
     IERC20 public lpt;
 
     /// @dev 质押总量

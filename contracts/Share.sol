@@ -5,9 +5,9 @@ import '@openzeppelin/contracts/token/ERC20/ERC20Burnable.sol';
 import './lib/AdminRole.sol';
 
 /**
- * @dev GoSwap 平台币
+ * @dev GoCash 股份
  */
-contract GoSwapToken is ERC20('GoSwap Token', 'GOT'), ERC20Burnable, AdminRole {
+contract Share is ERC20('GoCash Token', 'Share'), ERC20Burnable, AdminRole {
     /**
      * @notice Operator mints basis cash to a recipient
      * @param recipient_ The address of recipient
