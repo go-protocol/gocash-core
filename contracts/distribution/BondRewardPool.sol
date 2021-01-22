@@ -69,7 +69,7 @@ import '../token/LPTokenWrapper.sol';
  * @title bond LP Token矿池合约
  * @notice 周期8小时
  */
-contract RewardPool is LPTokenWrapper, Operator {
+contract BondRewardPool is LPTokenWrapper, Operator {
     /// @notice bond合约地址
     IERC20 public bond;
     /// @notice 时间周期 = 365天

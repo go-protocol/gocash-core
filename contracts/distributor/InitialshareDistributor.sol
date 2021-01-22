@@ -4,8 +4,12 @@ pragma solidity ^0.6.0;
 import '@openzeppelin/contracts/math/SafeMath.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
-import '../interfaces/IRewardDistributionRecipient.sol';
 import '../interfaces/IDistributor.sol';
+
+
+interface IRewardDistribution {
+    function notifyRewardAmount(uint256 reward) external;
+}
 
 contract InitialshareDistributor is IDistributor {
     using SafeMath for uint256;
@@ -17,11 +21,11 @@ contract InitialshareDistributor is IDistributor {
     /// @notice share地址
     IERC20 public share;
     /// @notice HUSDcashLPPool 矿池地址
-    IRewardDistributionRecipient public HUSDcashLPPool;
+    IRewardDistribution public HUSDcashLPPool;
     /// @notice HUSDcash 初始奖励
     uint256 public HUSDcashInitialBalance;
     /// @notice HUSDshareLPPool 矿池地址
-    IRewardDistributionRecipient public HUSDshareLPPool;
+    IRewardDistribution public HUSDshareLPPool;
     /// @notice HUSDshare 初始奖励
     uint256 public HUSDshareInitialBalance;
 
@@ -35,9 +39,9 @@ contract InitialshareDistributor is IDistributor {
      */
     constructor(
         IERC20 _share,
-        IRewardDistributionRecipient _HUSDcashLPPool,
+        IRewardDistribution _HUSDcashLPPool,
         uint256 _HUSDcashInitialBalance,
-        IRewardDistributionRecipient _HUSDshareLPPool,
+        IRewardDistribution _HUSDshareLPPool,
         uint256 _HUSDshareInitialBalance
     ) public {
         share = _share;

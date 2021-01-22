@@ -165,7 +165,7 @@ contract Treasury is ContractGuard, Epoch {
             AdminRole(cash).isAdmin(address(this)) &&
                 AdminRole(bond).isAdmin(address(this)) &&
                 AdminRole(share).isAdmin(address(this)) &&
-                AdminRole(share).isAdmin(address(this)) &&
+                AdminRole(lpBoardroom).isAdmin(address(this)) &&
                 AdminRole(shareBoardroom).isAdmin(address(this)),
             'Treasury: need more permission'
         );

@@ -67,15 +67,15 @@ import '../token/LPTokenWrapper.sol';
 
 /**
  * @title HUSD-share的LP Token矿池合约
- * @notice 周期365天
+ * @notice 周期180天
  */
 contract HUSDshareLPTokenSharePool is
     LPTokenWrapper,
     IRewardDistributionRecipient
 {
     IERC20 public share;
-    /// @notice 时间周期 = 365天
-    uint256 public DURATION = 365 days;
+    /// @notice 时间周期 = 180天
+    uint256 public DURATION = 180 days;
     /// @notice 开始时间
     uint256 public starttime; // starttime TBD
     /// @notice 结束时间
@@ -260,28 +260,28 @@ contract HUSDshareLPTokenSharePool is
         if (block.timestamp > starttime) {
             // 如果当前时间 >= 结束时间
             if (block.timestamp >= periodFinish) {
-                // 每秒奖励 = 奖励数量 / 365天
+                // 每秒奖励 = 奖励数量 / 180天
                 rewardRate = reward.div(DURATION);
             } else {
                 // 剩余时间 = 结束时间 - 当前时间
                 uint256 remaining = periodFinish.sub(block.timestamp);
                 // 剩余奖励数量 = 剩余时间 * 每秒奖励 (第一次执行为0)
                 uint256 leftover = remaining.mul(rewardRate);
-                // 每秒奖励 = (奖励数量 + 剩余奖励数量) / 365天
+                // 每秒奖励 = (奖励数量 + 剩余奖励数量) / 180天
                 rewardRate = reward.add(leftover).div(DURATION);
             }
             //最后更新时间 = 当前时间
             lastUpdateTime = block.timestamp;
-            // 结束时间 = 当前时间 + 365天
+            // 结束时间 = 当前时间 + 180天
             periodFinish = block.timestamp.add(DURATION);
             // 触发奖励增加事件
             emit RewardAdded(reward);
         } else {
-            // 每秒奖励 = 奖励数量 / 365天
+            // 每秒奖励 = 奖励数量 / 180天
             rewardRate = reward.div(DURATION);
             // 最后更新时间 = 开始时间
             lastUpdateTime = starttime;
-            // 结束时间 = 开始时间 + 365天
+            // 结束时间 = 开始时间 + 180天
             periodFinish = starttime.add(DURATION);
             // 触发奖励增加事件
             emit RewardAdded(reward);

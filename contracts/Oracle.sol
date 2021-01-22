@@ -43,16 +43,14 @@ contract GoSwapOracle is Epoch {
      * @param _company 公司合约地址
      * @param _tokenA TokenA地址
      * @param _tokenB TokenB地址
-     * @param _period 周期时长
      * @param _startTime 开始时间
      */
     constructor(
         address _company,
         address _tokenA,
         address _tokenB,
-        uint256 _period,
         uint256 _startTime
-    ) public Epoch(_period, _startTime, 0) {
+    ) public Epoch(8 hours, _startTime, 0) {
         // 从公司合约获取配对合约地址
         IGoSwapPair _pair = IGoSwapPair(GoSwapLibrary.pairFor(_company, _tokenA, _tokenB));
         pair = _pair;

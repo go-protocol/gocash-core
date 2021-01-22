@@ -67,17 +67,15 @@ import '../token/LPTokenWrapper.sol';
 
 /**
  * @title HUSD-cash的LP Token矿池合约
- * @notice 周期30天,初始奖励100000,每周期衰减75%
+ * @notice 周期180天
  */
 contract HUSDcashLPTokenSharePool is
     LPTokenWrapper,
     IRewardDistributionRecipient
 {
-    IERC20 public GOT;
-    /// @notice 时间周期 = 30天
-    uint256 public DURATION = 30 days;
-    /// @notice 初始奖励
-    uint256 public initreward = 100000 * 10**18;
+    IERC20 public cash;
+    /// @notice 时间周期 = 180天
+    uint256 public DURATION = 180 days;
     /// @notice 开始时间
     uint256 public starttime; // starttime TBD
     /// @notice 结束时间
@@ -100,16 +98,16 @@ contract HUSDcashLPTokenSharePool is
 
     /**
      * @dev 构造函数
-     * @param GOT_ GOT地址
+     * @param cash_ cash地址
      * @param lptoken_ LPtoken地址
      * @param starttime_ 开始时间
      */
     constructor(
-        address GOT_,
+        address cash_,
         address lptoken_,
         uint256 starttime_
     ) public {
-        GOT = IERC20(GOT_);
+        cash = IERC20(cash_);
         lpt = IERC20(lptoken_);
         starttime = starttime_;
     }
@@ -119,24 +117,6 @@ contract HUSDcashLPTokenSharePool is
      */
     modifier checkStart() {
         require(block.timestamp >= starttime, 'LPTokenSharePool: not start');
-        _;
-    }
-
-    /**
-     * @dev 衰减
-     */
-    modifier checkhalve() {
-        // 如果当前时间>=结束时间
-        if (block.timestamp >= periodFinish) {
-            // 初始奖励 = 初始奖励 * 75%
-            initreward = initreward.mul(75).div(100);
-            // 每秒奖励 = 初始奖励 / 30天
-            rewardRate = initreward.div(DURATION);
-            // 结束时间 = 当前时间 + 30天
-            periodFinish = block.timestamp.add(DURATION);
-            // 触发奖励增加事件
-            emit RewardAdded(initreward);
-        }
         _;
     }
 
@@ -211,11 +191,10 @@ contract HUSDcashLPTokenSharePool is
         public
         override
         updateReward(msg.sender)
-        checkhalve
         checkStart
     {
         // 确认数量>0
-        require(amount > 0, 'HUSDcashLPTokenSharePool: Cannot stake 0');
+        require(amount > 0, 'HUSDGOCLPTokenSharePool: Cannot stake 0');
         // 上级质押
         super.stake(amount);
         // 触发质押事件
@@ -230,11 +209,10 @@ contract HUSDcashLPTokenSharePool is
         public
         override
         updateReward(msg.sender)
-        checkhalve
         checkStart
     {
         // 确认数量>0
-        require(amount > 0, 'HUSDcashLPTokenSharePool: Cannot withdraw 0');
+        require(amount > 0, 'HUSDGOCLPTokenSharePool: Cannot withdraw 0');
         // 上级提款
         super.withdraw(amount);
         // 触发提款事件
@@ -254,7 +232,7 @@ contract HUSDcashLPTokenSharePool is
     /**
      * @dev 获取奖励
      */
-    function getReward() public updateReward(msg.sender) checkhalve checkStart {
+    function getReward() public updateReward(msg.sender) checkStart {
         // 奖励数量 = 用户已奖励的数量
         uint256 reward = earned(msg.sender);
         // 如果奖励数量>0
@@ -262,7 +240,7 @@ contract HUSDcashLPTokenSharePool is
             // 用户未发放的奖励数量 = 0
             rewards[msg.sender] = 0;
             // 发送奖励
-            GOT.safeTransfer(msg.sender, reward);
+            cash.safeTransfer(msg.sender, reward);
             // 触发支付奖励事件
             emit RewardPaid(msg.sender, reward);
         }
@@ -282,28 +260,28 @@ contract HUSDcashLPTokenSharePool is
         if (block.timestamp > starttime) {
             // 如果当前时间 >= 结束时间
             if (block.timestamp >= periodFinish) {
-                // 每秒奖励 = 奖励数量 / 30天
+                // 每秒奖励 = 奖励数量 / 180天
                 rewardRate = reward.div(DURATION);
             } else {
                 // 剩余时间 = 结束时间 - 当前时间
                 uint256 remaining = periodFinish.sub(block.timestamp);
                 // 剩余奖励数量 = 剩余时间 * 每秒奖励 (第一次执行为0)
                 uint256 leftover = remaining.mul(rewardRate);
-                // 每秒奖励 = (奖励数量 + 剩余奖励数量) / 30天
+                // 每秒奖励 = (奖励数量 + 剩余奖励数量) / 180天
                 rewardRate = reward.add(leftover).div(DURATION);
             }
             //最后更新时间 = 当前时间
             lastUpdateTime = block.timestamp;
-            // 结束时间 = 当前时间 + 30天
+            // 结束时间 = 当前时间 + 180天
             periodFinish = block.timestamp.add(DURATION);
             // 触发奖励增加事件
             emit RewardAdded(reward);
         } else {
-            // 每秒奖励 = 奖励数量 / 30天
-            rewardRate = initreward.div(DURATION);
+            // 每秒奖励 = 奖励数量 / 180天
+            rewardRate = reward.div(DURATION);
             // 最后更新时间 = 开始时间
             lastUpdateTime = starttime;
-            // 结束时间 = 开始时间 + 30天
+            // 结束时间 = 开始时间 + 180天
             periodFinish = starttime.add(DURATION);
             // 触发奖励增加事件
             emit RewardAdded(reward);
