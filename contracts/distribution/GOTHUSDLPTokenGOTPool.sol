@@ -61,21 +61,23 @@ import '@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
 
 // File: contracts/IRewardDistributionRecipient.sol
 
-import '../lib/AdminRole.sol';
+import '../interfaces/IRewardDistributionRecipient.sol';
 
 import '../token/LPTokenWrapper.sol';
 
 /**
- * @title bond LP Token矿池合约
- * @notice 周期8小时
+ * @title HT-HUSD的LP Token矿池合约
+ * @notice 周期180天
  */
-contract BondRewardPool is LPTokenWrapper, AdminRole {
-    /// @notice bond合约地址
-    IERC20 public bond;
-    /// @notice 时间周期 = 365天
-    uint256 public DURATION = 8 hours;
+contract GOTHUSDLPTokenGOTPool is
+    LPTokenWrapper,
+    IRewardDistributionRecipient
+{
+    IERC20 public GOT;
+    /// @notice 时间周期 = 180天
+    uint256 public DURATION = 180 days;
     /// @notice 开始时间
-    uint256 public starttime;
+    uint256 public starttime; // starttime TBD
     /// @notice 结束时间
     uint256 public periodFinish = 0;
     /// @notice 每秒奖励数量
@@ -84,8 +86,6 @@ contract BondRewardPool is LPTokenWrapper, AdminRole {
     uint256 public lastUpdateTime;
     /// @notice 储存奖励数量
     uint256 public rewardPerTokenStored;
-    /// @notice 最后奖励数量
-    uint256 public lastRewardAmount;
     /// @notice 每个质押Token支付用户的奖励
     mapping(address => uint256) public userRewardPerTokenPaid;
     /// @notice 用户未发放的奖励数量
@@ -98,16 +98,16 @@ contract BondRewardPool is LPTokenWrapper, AdminRole {
 
     /**
      * @dev 构造函数
-     * @param bond_ bond地址
+     * @param GOT_ GOT地址
      * @param lptoken_ LPtoken地址
      * @param starttime_ 开始时间
      */
     constructor(
-        address bond_,
+        address GOT_,
         address lptoken_,
         uint256 starttime_
     ) public {
-        bond = IERC20(bond_);
+        GOT = IERC20(GOT_);
         lpt = IERC20(lptoken_);
         starttime = starttime_;
     }
@@ -116,7 +116,7 @@ contract BondRewardPool is LPTokenWrapper, AdminRole {
      * @dev 检查开始时间
      */
     modifier checkStart() {
-        require(block.timestamp >= starttime, 'RewardPool: not start');
+        require(block.timestamp >= starttime, 'LPTokenSharePool: not start');
         _;
     }
 
@@ -194,7 +194,7 @@ contract BondRewardPool is LPTokenWrapper, AdminRole {
         checkStart
     {
         // 确认数量>0
-        require(amount > 0, 'RewardPool: Cannot stake 0');
+        require(amount > 0, 'HUSDGOCLPTokenSharePool: Cannot stake 0');
         // 上级质押
         super.stake(amount);
         // 触发质押事件
@@ -212,7 +212,7 @@ contract BondRewardPool is LPTokenWrapper, AdminRole {
         checkStart
     {
         // 确认数量>0
-        require(amount > 0, 'RewardPool: Cannot withdraw 0');
+        require(amount > 0, 'HUSDGOCLPTokenSharePool: Cannot withdraw 0');
         // 上级提款
         super.withdraw(amount);
         // 触发提款事件
@@ -240,7 +240,7 @@ contract BondRewardPool is LPTokenWrapper, AdminRole {
             // 用户未发放的奖励数量 = 0
             rewards[msg.sender] = 0;
             // 发送奖励
-            bond.safeTransfer(msg.sender, reward);
+            GOT.safeTransfer(msg.sender, reward);
             // 触发支付奖励事件
             emit RewardPaid(msg.sender, reward);
         }
@@ -252,37 +252,36 @@ contract BondRewardPool is LPTokenWrapper, AdminRole {
      */
     function notifyRewardAmount(uint256 reward)
         external
-        onlyAdmin
+        override
+        onlyRewardDistribution
         updateReward(address(0))
     {
-        // 最后奖励数量 = 奖励数量
-        lastRewardAmount = reward;
         // 如果当前时间>开始时间
         if (block.timestamp > starttime) {
             // 如果当前时间 >= 结束时间
             if (block.timestamp >= periodFinish) {
-                // 每秒奖励 = 奖励数量 / 365天
+                // 每秒奖励 = 奖励数量 / 180天
                 rewardRate = reward.div(DURATION);
             } else {
                 // 剩余时间 = 结束时间 - 当前时间
                 uint256 remaining = periodFinish.sub(block.timestamp);
                 // 剩余奖励数量 = 剩余时间 * 每秒奖励 (第一次执行为0)
                 uint256 leftover = remaining.mul(rewardRate);
-                // 每秒奖励 = (奖励数量 + 剩余奖励数量) / 365天
+                // 每秒奖励 = (奖励数量 + 剩余奖励数量) / 180天
                 rewardRate = reward.add(leftover).div(DURATION);
             }
             //最后更新时间 = 当前时间
             lastUpdateTime = block.timestamp;
-            // 结束时间 = 当前时间 + 365天
+            // 结束时间 = 当前时间 + 180天
             periodFinish = block.timestamp.add(DURATION);
             // 触发奖励增加事件
             emit RewardAdded(reward);
         } else {
-            // 每秒奖励 = 奖励数量 / 365天
+            // 每秒奖励 = 奖励数量 / 180天
             rewardRate = reward.div(DURATION);
             // 最后更新时间 = 开始时间
             lastUpdateTime = starttime;
-            // 结束时间 = 开始时间 + 365天
+            // 结束时间 = 开始时间 + 180天
             periodFinish = starttime.add(DURATION);
             // 触发奖励增加事件
             emit RewardAdded(reward);

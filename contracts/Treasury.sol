@@ -165,6 +165,7 @@ contract Treasury is ContractGuard, Epoch {
             AdminRole(cash).isAdmin(address(this)) &&
                 AdminRole(bond).isAdmin(address(this)) &&
                 AdminRole(share).isAdmin(address(this)) &&
+                AdminRole(bondRewardPool).isAdmin(address(this)) &&
                 AdminRole(lpBoardroom).isAdmin(address(this)) &&
                 AdminRole(shareBoardroom).isAdmin(address(this)),
             'Treasury: need more permission'
@@ -248,14 +249,6 @@ contract Treasury is ContractGuard, Epoch {
         bondPrice = _bondPrice;
         oraclePriceOne = _oraclePriceOne;
 
-        // burn all of it's balance
-        // 销毁本合约所有持有的GOC
-        // IBasisAsset(cash).burn(IERC20(cash).balanceOf(address(this)));
-
-        // set accumulatedSeigniorage to it's balance
-        // 设置累计储备量为本合约GOC数量的初始余额,即为0
-        // accumulatedSeigniorage = IERC20(cash).balanceOf(address(this));
-
         initialized = true;
         //触发合约初始化事件
         emit Initialized(msg.sender, block.number);
@@ -288,6 +281,8 @@ contract Treasury is ContractGuard, Epoch {
 
         // Boardroom
         //更换boardroom合约的Admin
+        AdminRole(bondRewardPool).addAdmin(target);
+        AdminRole(bondRewardPool).renounceAdmin();
         AdminRole(shareBoardroom).addAdmin(target);
         AdminRole(shareBoardroom).renounceAdmin();
         AdminRole(lpBoardroom).addAdmin(target);
