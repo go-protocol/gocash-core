@@ -3,7 +3,9 @@ pragma solidity ^0.6.0;
 
 import '@openzeppelin/contracts/token/ERC20/ERC20Burnable.sol';
 import './lib/AdminRole.sol';
-
+/**
+ * @dev GoCash 债券
+ */
 contract Bond is ERC20Burnable, AdminRole {
     /**
      * @notice 发行GoSwap Bond代币
