@@ -50,7 +50,7 @@ contract GoSwapOracle is Epoch {
         address _tokenA,
         address _tokenB,
         uint256 _startTime
-    ) public Epoch(8 hours, _startTime, 0) {
+    ) public Epoch(12 hours, _startTime, 0) {
         // 从公司合约获取配对合约地址
         IGoSwapPair _pair = IGoSwapPair(GoSwapLibrary.pairFor(_company, _tokenA, _tokenB));
         pair = _pair;
