@@ -425,9 +425,9 @@ contract Treasury is ContractGuard, Epoch {
     {
         //通过预言机获取GOC价格
         uint256 cashPrice = _getCashPrice(oracle);
-        // 确认GOC价格大于cashPriceCeiling，即1.05
+        // 确认GOC价格大于cashPriceCeiling，即1.02
         require(
-            cashPrice > cashPriceCeiling, // price > $1.05
+            cashPrice > cashPriceCeiling, // price > $1.02
             'Treasury: cashPrice not eligible for bond purchase'
         );
         // 赎回数量 = 最小值(GOC的累计储备量,赎回数额)
