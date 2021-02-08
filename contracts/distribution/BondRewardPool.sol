@@ -72,7 +72,7 @@ import '../token/LPTokenWrapper.sol';
 contract BondRewardPool is LPTokenWrapper, AdminRole {
     /// @notice bond合约地址
     IERC20 public bond;
-    /// @notice 时间周期 = 365天
+    /// @notice 时间周期 = 8小时
     uint256 public DURATION = 8 hours;
     /// @notice 开始时间
     uint256 public starttime;
@@ -261,28 +261,28 @@ contract BondRewardPool is LPTokenWrapper, AdminRole {
         if (block.timestamp > starttime) {
             // 如果当前时间 >= 结束时间
             if (block.timestamp >= periodFinish) {
-                // 每秒奖励 = 奖励数量 / 365天
+                // 每秒奖励 = 奖励数量 / 8小时
                 rewardRate = reward.div(DURATION);
             } else {
                 // 剩余时间 = 结束时间 - 当前时间
                 uint256 remaining = periodFinish.sub(block.timestamp);
                 // 剩余奖励数量 = 剩余时间 * 每秒奖励 (第一次执行为0)
                 uint256 leftover = remaining.mul(rewardRate);
-                // 每秒奖励 = (奖励数量 + 剩余奖励数量) / 365天
+                // 每秒奖励 = (奖励数量 + 剩余奖励数量) / 8小时
                 rewardRate = reward.add(leftover).div(DURATION);
             }
             //最后更新时间 = 当前时间
             lastUpdateTime = block.timestamp;
-            // 结束时间 = 当前时间 + 365天
+            // 结束时间 = 当前时间 + 8小时
             periodFinish = block.timestamp.add(DURATION);
             // 触发奖励增加事件
             emit RewardAdded(reward);
         } else {
-            // 每秒奖励 = 奖励数量 / 365天
+            // 每秒奖励 = 奖励数量 / 8小时
             rewardRate = reward.div(DURATION);
             // 最后更新时间 = 开始时间
             lastUpdateTime = starttime;
-            // 结束时间 = 开始时间 + 365天
+            // 结束时间 = 开始时间 + 8小时
             periodFinish = starttime.add(DURATION);
             // 触发奖励增加事件
             emit RewardAdded(reward);
