@@ -50,9 +50,10 @@ contract GoSwapOracle is Epoch {
         address _tokenA,
         address _tokenB,
         uint256 _startTime
-    ) public Epoch(8 hours, _startTime, 0) {
+    ) public Epoch(12 hours, _startTime, 0) {
         // 从公司合约获取配对合约地址
-        IGoSwapPair _pair = IGoSwapPair(GoSwapLibrary.pairFor(_company, _tokenA, _tokenB));
+        IGoSwapPair _pair =
+            IGoSwapPair(GoSwapLibrary.pairFor(_company, _tokenA, _tokenB));
         pair = _pair;
         token0 = _pair.token0();
         token1 = _pair.token1();
@@ -75,8 +76,11 @@ contract GoSwapOracle is Epoch {
      */
     function update() external checkEpoch {
         // 使用反事实来产生累计价格，以节省燃料并避免调用同步。
-        (uint256 price0Cumulative, uint256 price1Cumulative, uint32 blockTimestamp) =
-            GoSwapOracleLibrary.currentCumulativePrices(address(pair));
+        (
+            uint256 price0Cumulative,
+            uint256 price1Cumulative,
+            uint32 blockTimestamp
+        ) = GoSwapOracleLibrary.currentCumulativePrices(address(pair));
         // 时间流逝 = 当前时间 - 上次更新储备量的时间 (需要减法溢出)
         uint32 timeElapsed = blockTimestamp - blockTimestampLast; // overflow is desired
         // 如果时间流逝 = 0 返回
@@ -89,9 +93,13 @@ contract GoSwapOracle is Epoch {
         // cumulative price is in (uq112x112 price * seconds) units so we simply wrap it after division by time elapsed
         // 累计价格以（uq112x112价格*秒）单位表示，因此我们只需要在经过时间划分后将其包装即可
         // 平均价格0 = (最新的累计价格 - 上一次记录的累计价格) / 时间流逝
-        price0Average = FixedPoint.uq112x112(uint224((price0Cumulative - price0CumulativeLast) / timeElapsed));
+        price0Average = FixedPoint.uq112x112(
+            uint224((price0Cumulative - price0CumulativeLast) / timeElapsed)
+        );
         // 平均价格1 = (最新的累计价格 - 上一次记录的累计价格) / 时间流逝
-        price1Average = FixedPoint.uq112x112(uint224((price1Cumulative - price1CumulativeLast) / timeElapsed));
+        price1Average = FixedPoint.uq112x112(
+            uint224((price1Cumulative - price1CumulativeLast) / timeElapsed)
+        );
         // 记录最新累计价格
         price0CumulativeLast = price0Cumulative;
         price1CumulativeLast = price1Cumulative;
@@ -109,7 +117,11 @@ contract GoSwapOracle is Epoch {
      * @notice 请注意，在首次成功调用更新之前，它将始终返回0。
      */
     // note this will always return 0 before update has been called successfully for the first time.
-    function consult(address token, uint256 amountIn) external view returns (uint144 amountOut) {
+    function consult(address token, uint256 amountIn)
+        external
+        view
+        returns (uint144 amountOut)
+    {
         // 如果token为token0
         if (token == token0) {
             // 输出数量 = 平均价格0 * 输入数量 / 2**112

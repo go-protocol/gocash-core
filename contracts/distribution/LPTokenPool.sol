@@ -66,14 +66,14 @@ import '../interfaces/IRewardDistributionRecipient.sol';
 import '../token/LPTokenWrapper.sol';
 
 /**
- * @title HUSD-share的LP Token矿池合约
+ * @title LP Token矿池合约
  * @notice 周期180天
  */
-contract HUSDshareLPTokenSharePool is
+contract LPTokenPool is
     LPTokenWrapper,
     IRewardDistributionRecipient
 {
-    IERC20 public share;
+    IERC20 public token;
     /// @notice 时间周期 = 180天
     uint256 public DURATION = 180 days;
     /// @notice 开始时间
@@ -98,16 +98,16 @@ contract HUSDshareLPTokenSharePool is
 
     /**
      * @dev 构造函数
-     * @param share_ share地址
+     * @param token_ token地址
      * @param lptoken_ LPtoken地址
      * @param starttime_ 开始时间
      */
     constructor(
-        address share_,
+        address token_,
         address lptoken_,
         uint256 starttime_
     ) public {
-        share = IERC20(share_);
+        token = IERC20(token_);
         lpt = IERC20(lptoken_);
         starttime = starttime_;
     }
@@ -240,7 +240,7 @@ contract HUSDshareLPTokenSharePool is
             // 用户未发放的奖励数量 = 0
             rewards[msg.sender] = 0;
             // 发送奖励
-            share.safeTransfer(msg.sender, reward);
+            token.safeTransfer(msg.sender, reward);
             // 触发支付奖励事件
             emit RewardPaid(msg.sender, reward);
         }
