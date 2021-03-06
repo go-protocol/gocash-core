@@ -221,7 +221,7 @@ contract Boardroom is shareWrapper, ContractGuard, AdminRole {
      * @return 时间戳
      */
     function getCurrentEpochTimestamp() public view returns(uint256) {
-        // 整周期时间戳 + ((当前时间戳 - 整周期时间戳) * 周期时长 / 周期时长)
+        // 整周期时间戳 + (取整((当前时间戳 - 整周期时间戳) / 周期时长) * 周期时长)
         return epochAlignTimestamp.add(
                 block.timestamp
                 .sub(epochAlignTimestamp)
