@@ -474,7 +474,7 @@ contract Treasury is ContractGuard, Epoch {
         uint256 cashSupply = IERC20(cash).totalSupply().sub(
             accumulatedSeigniorage
         );
-        //判断当GOC价格小于等于cashPriceBondReward即小于0.98
+        //判断当GOC价格小于等于cashPriceBondReward即小于0.95
         if (cashPrice <= cashPriceBondReward) {
             // 奖励数量 = bond的1%
             uint256 rewardAmount = IERC20(bond).totalSupply().div(100);
